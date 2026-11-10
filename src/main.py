@@ -1,7 +1,14 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI()
 
+class Item(BaseModel):
+    name: str
+    price: float
+    instock: bool = True
+
+item_list = []
 
 # root
 @app.get("/")
@@ -15,17 +22,26 @@ def say():
     return {"message": "About Delroy"}
 
 
-# sending data
+# create items
 @app.post("/items")
-def createshop():
-    return {"message": "Items shop created"}
+def create_item(item: Item):
+    new_item = item.model_dump()
+    new_item["id"] = len(item_list) + 1
+
+    item_list.append(new_item)
+    return {"message": "Item created", "item": item}
 
 
-# get items
+# get ONE items
 @app.get("/items/{item_id}")
 def get_item(item_id: int):
     return {"message":f"Get item : {item_id}"}
 
+
+# get ALL items
+@app.get("/items")
+def get_all_item():
+    return {"items": item_list}
 
 # Updating items
 @app.put("/items/{item_id}")
