@@ -1,0 +1,19 @@
+[project]
+name = "fastapi-test"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Delroy09", email = "76178734+Delroy09@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.162.4",
+]
+
+[project.scripts]
+fastapi-test = "fastapi_test:main"
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
