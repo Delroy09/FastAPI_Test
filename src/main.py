@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -29,13 +29,20 @@ def create_item(item: Item):
     new_item["id"] = len(item_list) + 1
 
     item_list.append(new_item)
-    return {"message": "Item created", "item": item}
+    return {"message": "Item created", "item": new_item}
 
 
 # get ONE items
 @app.get("/items/{item_id}")
 def get_item(item_id: int):
-    return {"message":f"Get item : {item_id}"}
+    for item in item_list:
+        if item["id"] ==  item_id:
+            return item
+    raise HTTPException(
+        status_code=404,
+        detail="Item not found or deleted"
+    )
+
 
 
 # get ALL items
@@ -45,8 +52,16 @@ def get_all_item():
 
 # Updating items
 @app.put("/items/{item_id}")
-def update_item(item_id : int):
-    return {"message":f"Updating item :{item_id}"}
+def update_item(item_id : int, updated_item: Item):
+    for index, item in enumerate(item_list):
+        if item["id"] == item_id:
+            updated_data = updated_item.model_dump()
+            updated_data["id"] = item_id
+
+            item_list[index] = updated_data
+            return {"message":f"Updated item :{item_id}"}
+
+    raise HTTPException(status_code=404, detail=f"Item {item_id} doesnt exist or has been deleted")
 
 
 # partial updation of item
